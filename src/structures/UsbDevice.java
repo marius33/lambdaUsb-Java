@@ -163,8 +163,8 @@ public class UsbDevice {
         return confDesc;
     }
 
-    public BosDescriptor getBosDescriptor(){
-        BosDescriptor bosDesc = new BosDescriptor();
+    public UsbBosDescriptor getBosDescriptor(){
+        UsbBosDescriptor bosDesc = new UsbBosDescriptor();
         int retCode = LibUsb.getBosDescriptor(handle, bosDesc);
         return bosDesc;
     }
