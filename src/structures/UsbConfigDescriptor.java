@@ -8,6 +8,6 @@ import org.usb4java.ConfigDescriptor;
 public class UsbConfigDescriptor {
 
     protected ConfigDescriptor libusb_confDesc;
-    
+
 
 }
