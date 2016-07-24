@@ -31,7 +31,11 @@ public class UsbDeviceList implements Iterable<UsbDevice> {
     }
 
     public void freeUnusedDevices(){
-
+        for(int i=0; i<devices.size(); i++){
+            devices.get(i).unref();
+            if(!devices.get(i).isActive())
+                devices.remove(i);
+        }
     }
 
     @Override
