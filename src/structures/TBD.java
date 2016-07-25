@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class TBD {
 
-    private boolean isInit = false;
+    private static boolean isInit = false;
 
-    private void init(){
+    private static void init(){
 
         if(isInit == false) {
             LibUsb.init(null);
@@ -21,7 +21,7 @@ public class TBD {
 
     }
 
-    public UsbDeviceList getUsbDevices(){
+    public static UsbDeviceList getUsbDevices(){
 
         if(isInit==false)
             init();
