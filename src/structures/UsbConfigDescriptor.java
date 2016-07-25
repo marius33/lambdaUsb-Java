@@ -13,15 +13,15 @@ public class UsbConfigDescriptor {
     protected UsbInterface[] interfaces;
     private String description;
 
-    protected UsbConfigDescriptor(ConfigDescriptor confDesc, DeviceHandle dev){
+    protected UsbConfigDescriptor(ConfigDescriptor confDesc, DeviceHandle handle){
 
         libusb_confDesc = confDesc;
 
-        description = LibUsb.getStringDescriptor(dev, confDesc.iConfiguration());
+        description = LibUsb.getStringDescriptor(handle, confDesc.iConfiguration());
 
         interfaces = new UsbInterface[confDesc.bNumInterfaces()];
         for(int i = 0; i<confDesc.bNumInterfaces(); i++)
-            interfaces[i] = new UsbInterface(confDesc.iface()[i], dev);
+            interfaces[i] = new UsbInterface(confDesc.iface()[i], handle);
 
 
     }
@@ -40,6 +40,11 @@ public class UsbConfigDescriptor {
 
     public String description(){
         return description;
+    }
+
+    @Override
+    public String toString(){
+        
     }
 
 

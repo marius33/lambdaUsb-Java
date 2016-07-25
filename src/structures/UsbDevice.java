@@ -17,19 +17,20 @@ public final class UsbDevice {
         this.dev = dev;
         desc = new DeviceDescriptor();
         int retCode = LibUsb.getDeviceDescriptor(dev, desc);
+        if(retCode!=0)
+            throw new TBDRuntimeException(retCode);
 
     }
 
-    public boolean open(){
+    public void open() throws Exception{
         handle = new DeviceHandle();
         int retCode = LibUsb.open(dev, handle);
         if(retCode==0) {
             refCount++;
-            return true;
         }
         else{
             handle = null;
-            return false;
+            throw new TBDException(retCode);
         }
     }
 
@@ -100,18 +101,19 @@ public final class UsbDevice {
 
     public String manufacturer(){
         if(handle == null)
-            throw new TBDException("Can't retrieve manufacturer string. Device not opened.");
+            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve manufacturer string. Device not opened.");
         return LibUsb.getStringDescriptor(handle, desc.iManufacturer());
     }
-    public String product(){
+
+     String product(){
         if(handle == null)
-            throw new TBDException("Can't retrieve product string. Device not opened.");
+            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve product string. Device not opened.");
         return LibUsb.getStringDescriptor(handle, desc.iProduct());
     }
 
     public String serialNumber(){
         if(handle == null)
-            throw new TBDException("Can't retrieve serial number. Device not opened.");
+            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve serial number. Device not opened.");
         return LibUsb.getStringDescriptor(handle, desc.iSerialNumber());
     }
 
@@ -173,6 +175,8 @@ public final class UsbDevice {
     public ConfigDescriptor getActiveConfigDescriptor(){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getActiveConfigDescriptor(dev, confDesc);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
         return confDesc;
     }
 
@@ -183,43 +187,61 @@ public final class UsbDevice {
     public ConfigDescriptor getConfigDescriptor(int index){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptor(dev, (byte) index, confDesc);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
         return confDesc;
     }
 
     public ConfigDescriptor getConfigDescriptorByValue(int bConfigurationValue){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptorByValue(dev, (byte) bConfigurationValue, confDesc);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
         return confDesc;
     }
 
     public int getConfiguration(){
         IntBuffer ib = IntBuffer.allocate(0);
         int retCode = LibUsb.getConfiguration(handle, ib);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
         return ib.get();
     }
 
     public void setConfiguration(int conf){
         int retCode = LibUsb.setConfiguration(handle, conf);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public void claimInterface(int iface){
         int retCode = LibUsb.claimInterface(handle, iface);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public void releaseInterface(int iface){
         int retCode = LibUsb.releaseInterface(handle, iface);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public void setInterfaceAltSetting(int iface, int altSetting){
         int retCode = LibUsb.setInterfaceAltSetting(handle, iface, altSetting);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public void clearHalt(int endpoint){
         int retCode = LibUsb.clearHalt(handle, (byte) endpoint);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public void resetDevice(){
         int retCode = LibUsb.resetDevice(handle);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     public boolean kernelDriverActive(int iface){
@@ -229,13 +251,15 @@ public final class UsbDevice {
         else if(retCode==1)
             return true;
         else
-            throw new LibUsbException(retCode);
+            throw new TBDRuntimeException(retCode);
     }
 
     public UsbBosDescriptor getBosDescriptor(){
         UsbBosDescriptor bosDesc;
         BosDescriptor aux = new BosDescriptor();
         int retCode = LibUsb.getBosDescriptor(handle, aux);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
         bosDesc = new UsbBosDescriptor(aux);
         return bosDesc;
     }
@@ -246,72 +270,10 @@ public final class UsbDevice {
         sb.append("Vendor id", desc.idVendor(), "%04x");
         sb.append("Product id", desc.idProduct(), "%04x");
         sb.append("Class");
-        sb.append(getUsbClass(desc.bDeviceClass()));
+        sb.append(TBD.DEVICE_CLASS.getUsbClassString(desc.bDeviceClass()));
         sb.append("Release nr", getDevReleaseNumber());
         sb.append("USB spec", getUsbSpecificationRelease());
         return sb.toString();
-    }
-
-    private String getUsbClass(int classCode){
-        switch(classCode){
-            case LibUsb.CLASS_APPLICATION: {
-                return "Application";
-            }
-            case LibUsb.CLASS_AUDIO: {
-                return "Audio";
-            }
-            case LibUsb.CLASS_COMM: {
-                return "Communication";
-            }
-            case LibUsb.CLASS_CONTENT_SECURITY: {
-                return "Content Security";
-            }
-            case LibUsb.CLASS_DATA: {
-                return "Data";
-            }
-            case LibUsb.CLASS_DIAGNOSTIC_DEVICE: {
-                return "Diagnostic Device";
-            }
-            case LibUsb.CLASS_HID: {
-                return "HID";
-            }
-            case LibUsb.CLASS_HUB: {
-                return "Hub";
-            }
-            case LibUsb.CLASS_IMAGE: {
-                return "Image";
-            }
-            case LibUsb.CLASS_MASS_STORAGE: {
-                return "Mass Storage";
-            }
-            case LibUsb.CLASS_PER_INTERFACE: {
-                return "Per Interface";
-            }
-            case LibUsb.CLASS_PHYSICAL: {
-                return "Physical";
-            }
-            case LibUsb.CLASS_PRINTER: {
-                return "Printer";
-            }
-            case LibUsb.CLASS_SMART_CARD: {
-                return "Smart Card";
-            }
-            case LibUsb.CLASS_VIDEO: {
-                return "Video";
-            }
-            case LibUsb.CLASS_WIRELESS: {
-                return "Wireless";
-            }
-            case LibUsb.CLASS_PERSONAL_HEALTHCARE: {
-                return "Personal Healthcare";
-            }
-            case LibUsb.CLASS_VENDOR_SPEC: {
-                return "Vendor Specific";
-            }
-            default:{
-                return "";
-            }
-        }
     }
 
 }

@@ -22,6 +22,16 @@ public class UsbDeviceList implements Iterable<UsbDevice> {
 
     }
 
+    public UsbDeviceList filter(int vid, int pid){
+        for(int i=0; i<devices.size(); i++){
+            if(((devices.get(i).vid()!=vid) && (vid>=0)) || ((devices.get(i).pid()!=pid) && (pid>=0))){
+                devices.get(i).unref();
+                devices.remove(i);
+            }
+        }
+        return this;
+    }
+
     public int size(){
         return devices.size();
     }
