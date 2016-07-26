@@ -35,6 +35,16 @@ public class StringStructureBuilder {
         values.add(Integer.toString(value));
     }
 
+    public void append(String field, boolean value){
+
+        if(field.length()>maxLen)
+            maxLen = field.length();
+
+        fields.add(field);
+        values.add(Boolean.toString(value));
+
+    }
+
     public void append(String field, int value, String format){
 
         if(field.length()>maxLen)

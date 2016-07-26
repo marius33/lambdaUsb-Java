@@ -9,8 +9,10 @@ import java.nio.IntBuffer;
 public final class UsbDevice {
 
     Device dev;
-    DeviceDescriptor desc;
     DeviceHandle handle;
+
+    DeviceDescriptor desc;
+
     private int refCount = 1;
 
     public UsbDevice(org.usb4java.Device dev){
@@ -172,32 +174,32 @@ public final class UsbDevice {
         decrementRefCount();
     }
 
-    public ConfigDescriptor getActiveConfigDescriptor(){
+    public UsbConfigDescriptor getActiveConfigDescriptor(){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getActiveConfigDescriptor(dev, confDesc);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
-        return confDesc;
+        return new UsbConfigDescriptor(confDesc, handle);
     }
 
     public int getNumberOfConfigurations(){
         return desc.bNumConfigurations();
     }
 
-    public ConfigDescriptor getConfigDescriptor(int index){
+    public UsbConfigDescriptor getConfigDescriptor(int index){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptor(dev, (byte) index, confDesc);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
-        return confDesc;
+        return new UsbConfigDescriptor(confDesc, handle);
     }
 
-    public ConfigDescriptor getConfigDescriptorByValue(int bConfigurationValue){
+    public UsbConfigDescriptor getConfigDescriptorByValue(int bConfigurationValue){
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptorByValue(dev, (byte) bConfigurationValue, confDesc);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
-        return confDesc;
+        return new UsbConfigDescriptor(confDesc, handle);
     }
 
     public int getConfiguration(){
