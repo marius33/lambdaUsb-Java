@@ -73,6 +73,50 @@ public class TBD {
 
     }
 
+    public enum DeviceSpeed{
+
+        Unknown(CODE.UNKNOWN, "Unknown"),
+        Low(CODE.LOW, "Low"),
+        Full(CODE.FULL, "Full"),
+        High(CODE.HIGH, "High"),
+        Super(CODE.SUPER, "Super");
+
+        private int code;
+        private String description;
+
+        DeviceSpeed(int code, String desc){
+            this.code = code;
+            description = desc;
+        }
+
+        public int valueOf(){
+            return code;
+        }
+
+        @Override
+        public String toString(){
+            return description;
+        }
+
+        public static DeviceSpeed getFromCode(int deviceSpeed) {
+            for(DeviceSpeed devSpd : DeviceSpeed.values())
+                if(devSpd.valueOf()==deviceSpeed)
+                    return devSpd;
+
+            return null;
+        }
+
+        public static class CODE{
+            public static final int UNKNOWN = 0;
+            public static final int LOW = 1;
+            public static final int FULL = 2;
+            public static final int HIGH = 3;
+            public static final int SUPER = 4;
+        }
+
+
+    }
+
     public enum DeviceClass{
 
         PerInterface(Code.PER_INTERFACE, "Per interface"),

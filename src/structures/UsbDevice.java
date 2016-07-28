@@ -104,8 +104,8 @@ public final class UsbDevice {
         return LibUsb.getDeviceAddress(dev);
     }
 
-    public int getSpeed(){
-        return LibUsb.getDeviceSpeed(dev);
+    public TBD.DeviceSpeed getSpeed(){
+        return TBD.DeviceSpeed.getFromCode(LibUsb.getDeviceSpeed(dev));
     }
 
     public UsbConfigDescriptor getActiveConfigDescriptor() throws TBDException {
@@ -113,31 +113,24 @@ public final class UsbDevice {
         int retCode = LibUsb.getActiveConfigDescriptor(dev, confDesc);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDException(retCode);
-        return new UsbConfigDescriptor(confDesc, handle);
+        return new UsbConfigDescriptor(this);
     }
 
     public int getNumberOfConfigurations(){
         return desc.bNumConfigurations();
     }
 
-    public UsbConfigDescriptor getConfigDescriptor(int index){
-        ConfigDescriptor confDesc = new ConfigDescriptor();
-        int retCode = LibUsb.getConfigDescriptor(dev, (byte) index, confDesc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-        return new UsbConfigDescriptor(confDesc, handle);
+    public UsbConfigDescriptor getConfigDescriptor(int index) throws TBDException {
+
+        return new UsbConfigDescriptor(this, index);
     }
 
-    public UsbConfigDescriptor getConfigDescriptorByValue(int bConfigurationValue){
-        ConfigDescriptor confDesc = new ConfigDescriptor();
-        int retCode = LibUsb.getConfigDescriptorByValue(dev, (byte) bConfigurationValue, confDesc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-        return new UsbConfigDescriptor(confDesc, handle);
+    public UsbConfigDescriptor getConfigDescriptorByValue(byte bConfigurationValue) throws TBDException {
+        return new UsbConfigDescriptor(this, bConfigurationValue);
     }
 
     public int getConfiguration(){
-        IntBuffer ib = IntBuffer.allocate(0);
+        IntBuffer ib = IntBuffer.allocate(1);
         if(handle==null)
             return -1;
         int retCode = LibUsb.getConfiguration(handle, ib);
@@ -247,7 +240,7 @@ public final class UsbDevice {
     }
 
 
-    
+
     @Override
     public String toString(){
         StringStructureBuilder sb = new StringStructureBuilder();

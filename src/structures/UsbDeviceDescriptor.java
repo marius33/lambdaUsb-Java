@@ -19,13 +19,6 @@ public class UsbDeviceDescriptor {
             throw new TBDRuntimeException(retCode);
     }
 
-    public int vid(){
-        return desc.idVendor();
-    }
-
-    public int pid(){
-        return desc.idProduct();
-    }
 
     public int bLength(){
         return desc.bLength();
