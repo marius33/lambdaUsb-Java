@@ -147,8 +147,10 @@ public class UsbTreeNode implements MutableTreeNode {
     public String toString(){
         if(description!=null)
             return description;
-        else
+        else if(userObject!=null)
             return userObject.toString();
+        else
+            return "null";
     }
 
 }

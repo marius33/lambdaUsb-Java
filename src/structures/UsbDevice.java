@@ -10,26 +10,19 @@ public final class UsbDevice {
 
     Device dev;
     DeviceHandle handle;
-
-    DeviceDescriptor desc;
+    UsbDeviceDescriptor desc;
 
     private int refCount = 1;
 
-    public UsbDevice(org.usb4java.Device dev){
+    UsbDevice(org.usb4java.Device dev){
         this.dev = dev;
-        desc = new DeviceDescriptor();
-        int retCode = LibUsb.getDeviceDescriptor(dev, desc);
-        if(retCode!=0)
-            throw new TBDRuntimeException(retCode);
-
     }
 
     public void open() throws Exception{
         handle = new DeviceHandle();
         int retCode = LibUsb.open(dev, handle);
-        if(retCode==0) {
+        if(retCode==TBD.ERROR_CODE.SUCCESS)
             refCount++;
-        }
         else{
             handle = null;
             throw new TBDException(retCode);
@@ -42,6 +35,30 @@ public final class UsbDevice {
 
     public boolean isActive(){
         return refCount>0;
+    }
+
+    public int[] readBulk(int len, int endpoint) throws TBDException {
+        ByteBuffer buff = ByteBuffer.allocateDirect(len);
+        int retLen = transferBulk(buff, endpoint);
+        int[] ret = new int[retLen];
+        for(int i=0; i<retLen; i++)
+            ret[i] = buff.get(i);
+        return ret;
+    }
+
+    public void writeBulk(int[] data, int endpoint) throws TBDException {
+        ByteBuffer buff = ByteBuffer.allocateDirect(data.length);
+        int retLen = transferBulk(buff, endpoint);
+    }
+
+    public int transferBulk(ByteBuffer data, int endpoint) throws TBDException {
+        IntBuffer transferred = IntBuffer.allocate(1);
+        int retCode = LibUsb.bulkTransfer(handle, (byte) endpoint, data, transferred, 2000);
+        if(retCode==TBD.ERROR_CODE.SUCCESS){
+            return transferred.get();
+        }
+        else
+            throw new TBDException(retCode);
     }
 
     public void close(){
@@ -57,66 +74,6 @@ public final class UsbDevice {
             handle = null;
             desc = null;
         }
-    }
-
-    public int vid(){
-        return desc.idVendor();
-    }
-
-    public int pid(){
-        return desc.idProduct();
-    }
-
-    public float getUsbSpecificationRelease(){
-        int[] digits = new int[4];
-        int bcdUSB = desc.bcdUSB();
-        for(int i=0; i<4; i++)
-            digits[i] = (bcdUSB>>(i*4))&0x0F;
-        float version = (float) (digits[0]*0.01+digits[1]*0.1+digits[2]*1+digits[3]*10);
-        return version;
-    }
-
-    public int getDevClass(){
-        return desc.bDeviceClass();
-    }
-
-    public int getDevSubclass(){
-        return desc.bDeviceSubClass();
-    }
-
-    public int getDevProtocol(){
-        return desc.bDeviceProtocol();
-    }
-
-    public int getMaxPacketSize0(){
-        return desc.bMaxPacketSize0();
-    }
-
-    public float getDevReleaseNumber(){
-        int[] digits = new int[4];
-        int bcdDev = desc.bcdDevice();
-        for(int i=0; i<4; i++)
-            digits[i] = (bcdDev >>(i*4))&0x0F;
-        float version = (float) (digits[0]*0.01+digits[1]*0.1+digits[2]*1+digits[3]*10);
-        return version;
-    }
-
-    public String manufacturer(){
-        if(handle == null)
-            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve manufacturer string. Device not opened.");
-        return LibUsb.getStringDescriptor(handle, desc.iManufacturer());
-    }
-
-     String product(){
-        if(handle == null)
-            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve product string. Device not opened.");
-        return LibUsb.getStringDescriptor(handle, desc.iProduct());
-    }
-
-    public String serialNumber(){
-        if(handle == null)
-            throw new TBDException(TBD.ERROR_CODE.OTHER, "Can't retrieve serial number. Device not opened.");
-        return LibUsb.getStringDescriptor(handle, desc.iSerialNumber());
     }
 
     public int getBusNumber(){
@@ -174,11 +131,11 @@ public final class UsbDevice {
         decrementRefCount();
     }
 
-    public UsbConfigDescriptor getActiveConfigDescriptor(){
+    public UsbConfigDescriptor getActiveConfigDescriptor() throws TBDException {
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getActiveConfigDescriptor(dev, confDesc);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+            throw new TBDException(retCode);
         return new UsbConfigDescriptor(confDesc, handle);
     }
 
@@ -204,6 +161,8 @@ public final class UsbDevice {
 
     public int getConfiguration(){
         IntBuffer ib = IntBuffer.allocate(0);
+        if(handle==null)
+            return -1;
         int retCode = LibUsb.getConfiguration(handle, ib);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
@@ -217,30 +176,40 @@ public final class UsbDevice {
     }
 
     public void claimInterface(int iface){
+        if(handle==null)
+            return;
         int retCode = LibUsb.claimInterface(handle, iface);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
     }
 
     public void releaseInterface(int iface){
+        if(handle==null)
+            return;
         int retCode = LibUsb.releaseInterface(handle, iface);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
     }
 
     public void setInterfaceAltSetting(int iface, int altSetting){
+        if(handle==null)
+            return;
         int retCode = LibUsb.setInterfaceAltSetting(handle, iface, altSetting);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
     }
 
     public void clearHalt(int endpoint){
+        if(handle==null)
+            return;
         int retCode = LibUsb.clearHalt(handle, (byte) endpoint);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
     }
 
     public void resetDevice(){
+        if(handle==null)
+            return;
         int retCode = LibUsb.resetDevice(handle);
         if(retCode!=TBD.ERROR_CODE.SUCCESS)
             throw new TBDRuntimeException(retCode);
@@ -257,6 +226,8 @@ public final class UsbDevice {
     }
 
     public UsbBosDescriptor getBosDescriptor(){
+        if(handle==null)
+            return null;
         UsbBosDescriptor bosDesc;
         BosDescriptor aux = new BosDescriptor();
         int retCode = LibUsb.getBosDescriptor(handle, aux);
@@ -272,9 +243,9 @@ public final class UsbDevice {
         sb.append("Vendor id", desc.idVendor(), "%04x");
         sb.append("Product id", desc.idProduct(), "%04x");
         sb.append("Class");
-        sb.append(TBD.DEVICE_CLASS.getUsbClassString(desc.bDeviceClass()));
-        sb.append("Release nr", getDevReleaseNumber());
-        sb.append("USB spec", getUsbSpecificationRelease());
+        sb.append(desc.getDeviceClass());
+        sb.append("Release nr", desc.getDevReleaseNumber());
+        sb.append("USB spec", desc.getUsbSpecificationReleaseNumber());
         return sb.toString();
     }
 

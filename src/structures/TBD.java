@@ -3,8 +3,6 @@ package structures;
 import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
 
-import java.util.List;
-
 /**
  * Created by Marius on 24/07/2016.
  */
@@ -75,32 +73,128 @@ public class TBD {
 
     }
 
-    public static class DEVICE_CLASS{
+    public enum DeviceClass{
 
-        static String getUsbClassString(int classCode){
-            switch(classCode){
-                case LibUsb.CLASS_APPLICATION: return "Application";
-                case LibUsb.CLASS_AUDIO: return "Audio";
-                case LibUsb.CLASS_COMM:  return "Communication";
-                case LibUsb.CLASS_CONTENT_SECURITY: return "Content Security";
-                case LibUsb.CLASS_DATA: return "Data";
-                case LibUsb.CLASS_DIAGNOSTIC_DEVICE: return "Diagnostic Device";
-                case LibUsb.CLASS_HID: return "HID";
-                case LibUsb.CLASS_HUB: return "Hub";
-                case LibUsb.CLASS_IMAGE: return "Image";
-                case LibUsb.CLASS_MASS_STORAGE: return "Mass Storage";
-                case LibUsb.CLASS_PER_INTERFACE: return "Per Interface";
-                case LibUsb.CLASS_PHYSICAL:  return "Physical";
-                case LibUsb.CLASS_PRINTER: return "Printer";
-                case LibUsb.CLASS_SMART_CARD: return "Smart Card";
-                case LibUsb.CLASS_VIDEO: return "Video";
-                case LibUsb.CLASS_WIRELESS: return "Wireless";
-                case LibUsb.CLASS_PERSONAL_HEALTHCARE: return "Personal Healthcare";
-                case LibUsb.CLASS_VENDOR_SPEC: return "Vendor Specific";
+        PerInterface(Code.PER_INTERFACE, "Per interface"),
+        Audio(Code.AUDIO, "Audio"),
+        Comm(Code.COMM, "Communications"),
+        Hid(Code.HID, "Human Interface Device"),
+        Physical(Code.PHYSICAL, "Physical"),
+        Printer(Code.PRINTER, "Printer"),
+        PTP(Code.PTP, "Picture Transfer Protocol"),
+        Image(Code.IMAGE, "Image"),
+        MassStorage(Code.MASS_STORAGE, "Mass storage"),
+        Hub(Code.HUB, "Hub"),
+        Data(Code.DATA, "Data"),
+        SmartCard(Code.SMART_CARD, "Smart card"),
+        ContentSecurity(Code.CONTENT_SECURITY, "Content security"),
+        Video(Code.VIDEO, "Video"),
+        PersonalHealthcare(Code.PERSONAL_HEALTHCARE, "Peronal Health care"),
+        DiagnosticDevice(Code.DIAGNOSTIC_DEVICE, "Diagnostic device"),
+        Wireless(Code.WIRELESS, "Wireless"),
+        Application(Code.APPLICATION, "Application"),
+        VendorSpec(Code.VENDOR_SPEC, "Vendor specific");
+
+        private int code;
+        private String description;
+
+        DeviceClass(int code, String desc){
+            this.code = code;
+            description = desc;
+        }
+
+        public int valueOf(){
+            return code;
+        }
+
+        @Override
+        public String toString(){
+            return description;
+        }
+
+        public static DeviceClass getFromCode(int code){
+            for(DeviceClass devCls : DeviceClass.values()){
+                if(devCls.valueOf()==code)
+                    return devCls;
+            }
+            return null;
+        }
+
+        public static class Code{
+            public static final int PER_INTERFACE = 0;
+            public static final int AUDIO = 1;
+            public static final int COMM = 2;
+            public static final int HID = 3;
+            public static final int PHYSICAL = 5;
+            public static final int PRINTER = 7;
+            public static final int PTP = 6;
+            public static final int IMAGE = 6;
+            public static final int MASS_STORAGE = 8;
+            public static final int HUB = 9;
+            public static final int DATA = 10;
+            public static final int SMART_CARD = 0x0b;
+            public static final int CONTENT_SECURITY = 0x0d;
+            public static final int VIDEO = 0x0e;
+            public static final int PERSONAL_HEALTHCARE = 0x0f;
+            public static final int DIAGNOSTIC_DEVICE = 0xdc;
+            public static final int WIRELESS = 0xe0;
+            public static final int APPLICATION = 0xfe;
+            public static final int VENDOR_SPEC = 0xff;
+        }
+
+    }
+
+    public static class TRANSFER_TYPE{
+        public static final int CONTROL = 0;
+        public static final int ISOCHRONOUS = 1;
+        public static final int BULK = 2;
+        public static final int INTERRUPT = 3;
+        public static final int BULK_STREAM = 4;
+
+        static String getString(int code){
+            switch(code){
+                case CONTROL: return "Control";
+                case ISOCHRONOUS: return "Isochronous";
+                case BULK: return "Bulk";
+                case INTERRUPT: return "Interrupt";
+                case BULK_STREAM: return "Bulk Stream";
                 default: return "Unknown";
             }
         }
+    }
 
+    public static class ISO_SYNC_TYPE{
+
+        public static final int NONE = 0;
+        public static final int ASYNC = 1;
+        public static final int ADAPTIVE = 2;
+        public static final int SYNC = 3;
+
+        static String getString(int code){
+            switch(code){
+                case NONE: return "None";
+                case ASYNC: return "Async";
+                case ADAPTIVE: return "Adaptive";
+                case SYNC: return "Sync";
+                default: return "Unknown";
+            }
+        }
+    }
+
+    public static class ISO_USAGE_TYPE{
+
+        public static final int DATA = 0;
+        public static final int FEEDBACK = 1;
+        public static final int IMPLICIT = 2;
+
+        static String getString(int code){
+            switch(code){
+                case DATA: return "Data";
+                case FEEDBACK: return "Feedback";
+                case IMPLICIT: return "Implicit";
+                default: return "Unknown";
+            }
+        }
     }
 
 

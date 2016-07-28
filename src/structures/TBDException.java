@@ -3,7 +3,7 @@ package structures;
 /**
  * Created by Marius on 24/07/2016.
  */
-public class TBDException extends RuntimeException {
+public class TBDException extends Exception {
 
     private int errorCode;
 

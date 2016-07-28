@@ -74,6 +74,13 @@ public class StringStructureBuilder {
             values.add(s);
     }
 
+    public void append(Object o){
+        if(fields.size()!=values.size())
+            throw new RuntimeException("Field value must be a string. First append the field name.");
+
+        values.add(o.toString());
+    }
+
     public void append(int i){
         if(fields.size()!=values.size())
             throw new RuntimeException("Field value can't be an integer. First append the field name.");

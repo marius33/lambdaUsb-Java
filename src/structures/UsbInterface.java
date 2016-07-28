@@ -2,7 +2,6 @@ package structures;
 
 import org.usb4java.DeviceHandle;
 import org.usb4java.Interface;
-import org.usb4java.InterfaceDescriptor;
 
 /**
  * Created by Marius on 24/07/2016.
@@ -10,10 +9,10 @@ import org.usb4java.InterfaceDescriptor;
 public class UsbInterface {
 
     private UsbInterfaceDescriptor[] altSettings;
-    private Interface libusb_iface;
+    private Interface iface;
 
     protected UsbInterface(Interface iface, DeviceHandle dev){
-        libusb_iface = iface;
+        this.iface = iface;
         altSettings = new UsbInterfaceDescriptor[iface.numAltsetting()];
         for(int i = 0; i<iface.numAltsetting(); i++)
             altSettings[i] = new UsbInterfaceDescriptor(iface.altsetting()[i], dev);
@@ -24,7 +23,15 @@ public class UsbInterface {
     }
 
     public Interface toLibUsb(){
-        return libusb_iface;
+        return iface;
+    }
+
+    @Override
+    public String toString(){
+        StringStructureBuilder sb = new StringStructureBuilder();
+        sb.append("Num. of alt. settings", iface.numAltsetting());
+        return sb.toString();
+
     }
 
 

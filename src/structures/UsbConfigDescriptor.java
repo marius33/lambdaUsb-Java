@@ -27,6 +27,10 @@ public class UsbConfigDescriptor {
 
     }
 
+    public UsbInterface getInterface(int index){
+        return interfaces[index];
+    }
+
     public ConfigDescriptor getLibusb(){
         return confDesc;
     }

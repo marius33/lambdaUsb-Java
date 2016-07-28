@@ -9,12 +9,12 @@ import org.usb4java.LibUsb;
  */
 public class UsbInterfaceDescriptor {
 
-    private InterfaceDescriptor libusb_ifaceDesc;
+    private InterfaceDescriptor ifaceDesc;
     private UsbEndpointDescriptor[] endpoints;
     private String description;
 
     protected UsbInterfaceDescriptor(InterfaceDescriptor ifaceDesc, DeviceHandle dev) {
-        libusb_ifaceDesc = ifaceDesc;
+        this.ifaceDesc = ifaceDesc;
         endpoints = new UsbEndpointDescriptor[ifaceDesc.bNumEndpoints()];
         for(int i=0; i<ifaceDesc.bNumEndpoints(); i++)
             endpoints[i] = new UsbEndpointDescriptor(ifaceDesc.endpoint()[i]);
@@ -22,27 +22,27 @@ public class UsbInterfaceDescriptor {
     }
 
     public InterfaceDescriptor toLibUsb(){
-        return libusb_ifaceDesc;
+        return ifaceDesc;
     }
 
     public int getNumber(){
-        return libusb_ifaceDesc.bInterfaceNumber();
+        return ifaceDesc.bInterfaceNumber();
     }
 
     public int getAltSettingValue(){
-        return libusb_ifaceDesc.bAlternateSetting();
+        return ifaceDesc.bAlternateSetting();
     }
 
     public int getIfClass(){
-        return libusb_ifaceDesc.bInterfaceClass();
+        return ifaceDesc.bInterfaceClass();
     }
 
     public int getIfSubClass(){
-        return libusb_ifaceDesc.bInterfaceSubClass();
+        return ifaceDesc.bInterfaceSubClass();
     }
 
     public int getIfProtocol(){
-        return libusb_ifaceDesc.bInterfaceProtocol();
+        return ifaceDesc.bInterfaceProtocol();
     }
 
     public String getDescription(){
@@ -55,6 +55,19 @@ public class UsbInterfaceDescriptor {
 
     public UsbEndpointDescriptor getEndpoint(int index){
         return endpoints[index];
+    }
+
+    @Override
+    public String toString(){
+        StringStructureBuilder sb = new StringStructureBuilder();
+        sb.append("Interface number", ifaceDesc.bInterfaceNumber());
+        sb.append("Alt setting value", ifaceDesc.bAlternateSetting());
+        sb.append("Number of endpoints", ifaceDesc.bNumEndpoints());
+        sb.append("Class", TBD.DEVICE_CLASS.getString(ifaceDesc.bInterfaceClass()));
+        sb.append("Subclass", TBD.DEVICE_CLASS.getString(ifaceDesc.bInterfaceSubClass()));
+        sb.append("Protocol", ifaceDesc.bInterfaceProtocol());
+        sb.append("Description", description);
+        return sb.toString();
     }
 
 }
