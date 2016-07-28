@@ -29,41 +29,27 @@ public final class UsbDevice {
         }
     }
 
-    public boolean isOpen(){
-        return handle!=null;
-    }
-
-    public boolean isActive(){
-        return refCount>0;
-    }
-
-    public int[] readBulk(int len, int endpoint) throws TBDException {
-        ByteBuffer buff = ByteBuffer.allocateDirect(len);
-        int retLen = transferBulk(buff, endpoint);
-        int[] ret = new int[retLen];
-        for(int i=0; i<retLen; i++)
-            ret[i] = buff.get(i);
-        return ret;
-    }
-
-    public void writeBulk(int[] data, int endpoint) throws TBDException {
-        ByteBuffer buff = ByteBuffer.allocateDirect(data.length);
-        int retLen = transferBulk(buff, endpoint);
-    }
-
-    public int transferBulk(ByteBuffer data, int endpoint) throws TBDException {
-        IntBuffer transferred = IntBuffer.allocate(1);
-        int retCode = LibUsb.bulkTransfer(handle, (byte) endpoint, data, transferred, 2000);
-        if(retCode==TBD.ERROR_CODE.SUCCESS){
-            return transferred.get();
-        }
-        else
-            throw new TBDException(retCode);
-    }
-
     public void close(){
         LibUsb.close(handle);
         handle = null;
+        decrementRefCount();
+    }
+
+    public void resetDevice(){
+        if(handle==null)
+            return;
+        int retCode = LibUsb.resetDevice(handle);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
+    }
+
+    public void ref(){
+        dev = LibUsb.refDevice(dev);
+        refCount++;
+    }
+
+    public void unref(){
+        LibUsb.unrefDevice(dev);
         decrementRefCount();
     }
 
@@ -75,6 +61,15 @@ public final class UsbDevice {
             desc = null;
         }
     }
+
+    public boolean isOpen(){
+        return handle!=null;
+    }
+
+    public boolean isActive(){
+        return refCount>0;
+    }
+
 
     public int getBusNumber(){
         return LibUsb.getBusNumber(dev);
@@ -111,24 +106,6 @@ public final class UsbDevice {
 
     public int getSpeed(){
         return LibUsb.getDeviceSpeed(dev);
-    }
-
-    public int getMaxPacketSize(int endpoint){
-        return LibUsb.getMaxPacketSize(dev, (byte) endpoint);
-    }
-
-    public int getMaxIsoPacketSize(int endpoint){
-        return LibUsb.getMaxIsoPacketSize(dev, (byte) endpoint);
-    }
-
-    public void ref(){
-        dev = LibUsb.refDevice(dev);
-        refCount++;
-    }
-
-    public void unref(){
-        LibUsb.unrefDevice(dev);
-        decrementRefCount();
     }
 
     public UsbConfigDescriptor getActiveConfigDescriptor() throws TBDException {
@@ -175,6 +152,66 @@ public final class UsbDevice {
             throw new TBDRuntimeException(retCode);
     }
 
+    public UsbDeviceDescriptor getDeviceDescriptor(){
+        return desc;
+    }
+
+    public UsbBosDescriptor getBosDescriptor(){
+        if(handle==null)
+            return null;
+        UsbBosDescriptor bosDesc;
+        BosDescriptor aux = new BosDescriptor();
+        int retCode = LibUsb.getBosDescriptor(handle, aux);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
+        bosDesc = new UsbBosDescriptor(aux);
+        return bosDesc;
+    }
+
+
+    //endpoint shit
+    public int[] readBulk(int len, int endpoint) throws TBDException {
+        ByteBuffer buff = ByteBuffer.allocateDirect(len);
+        int retLen = transferBulk(buff, endpoint);
+        int[] ret = new int[retLen];
+        for(int i=0; i<retLen; i++)
+            ret[i] = buff.get(i);
+        return ret;
+    }
+
+    public void writeBulk(int[] data, int endpoint) throws TBDException {
+        ByteBuffer buff = ByteBuffer.allocateDirect(data.length);
+        int retLen = transferBulk(buff, endpoint);
+    }
+
+    public int transferBulk(ByteBuffer data, int endpoint) throws TBDException {
+        IntBuffer transferred = IntBuffer.allocate(1);
+        int retCode = LibUsb.bulkTransfer(handle, (byte) endpoint, data, transferred, 2000);
+        if(retCode==TBD.ERROR_CODE.SUCCESS){
+            return transferred.get();
+        }
+        else
+            throw new TBDException(retCode);
+    }
+
+    public int getMaxPacketSize(int endpoint){
+        return LibUsb.getMaxPacketSize(dev, (byte) endpoint);
+    }
+
+    public int getMaxIsoPacketSize(int endpoint){
+        return LibUsb.getMaxIsoPacketSize(dev, (byte) endpoint);
+    }
+
+    public void clearHalt(int endpoint){
+        if(handle==null)
+            return;
+        int retCode = LibUsb.clearHalt(handle, (byte) endpoint);
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
+    }
+
+
+    //interface shit
     public void claimInterface(int iface){
         if(handle==null)
             return;
@@ -199,22 +236,6 @@ public final class UsbDevice {
             throw new TBDRuntimeException(retCode);
     }
 
-    public void clearHalt(int endpoint){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.clearHalt(handle, (byte) endpoint);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
-    public void resetDevice(){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.resetDevice(handle);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
     public boolean kernelDriverActive(int iface){
         int retCode = LibUsb.kernelDriverActive(handle, iface);
         if(retCode==0)
@@ -225,18 +246,8 @@ public final class UsbDevice {
             throw new TBDRuntimeException(retCode);
     }
 
-    public UsbBosDescriptor getBosDescriptor(){
-        if(handle==null)
-            return null;
-        UsbBosDescriptor bosDesc;
-        BosDescriptor aux = new BosDescriptor();
-        int retCode = LibUsb.getBosDescriptor(handle, aux);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-        bosDesc = new UsbBosDescriptor(aux);
-        return bosDesc;
-    }
 
+    
     @Override
     public String toString(){
         StringStructureBuilder sb = new StringStructureBuilder();
