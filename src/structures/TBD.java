@@ -35,6 +35,7 @@ public class TBD {
 
     }
 
+
     public static class ERROR_CODE{
 
         public static final int SUCCESS = 0;
@@ -69,6 +70,49 @@ public class TBD {
                 case ERROR_CODE.OTHER: return "Other error.";
                 default: return "Error code outside of libusb.";
             }
+        }
+
+    }
+
+    public enum TransferType {
+
+        Control(CODE.CONTROL, "Control"),
+        Isochronous(CODE.ISOCHRONOUS, "Isochronous"),
+        Bulk(CODE.BULK, "Bulk"),
+        Interrupt(CODE.INTERRUPT, "Interrupt"),
+        BulkStream(CODE.BULK_STREAM, "Bulk stream");
+
+        private int code;
+        private String description;
+
+        TransferType(int code, String desc){
+            this.code = code;
+            description = desc;
+        }
+
+        public int valueOf(){
+            return code;
+        }
+
+        @Override
+        public String toString(){
+            return description;
+        }
+
+        public static TransferType getFromCode(int type) {
+            for(TransferType transType : TransferType.values())
+                if(transType.valueOf()==(type&LibUsb.TRANSFER_TYPE_MASK))
+                    return transType;
+
+            return null;
+        }
+
+        public static class CODE{
+            public static final int CONTROL = 0;
+            public static final int ISOCHRONOUS = 1;
+            public static final int BULK = 2;
+            public static final int INTERRUPT = 3;
+            public static final int BULK_STREAM = 4;
         }
 
     }

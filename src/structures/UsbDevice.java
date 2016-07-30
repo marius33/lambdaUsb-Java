@@ -161,85 +161,10 @@ public final class UsbDevice {
         return bosDesc;
     }
 
-
-    //endpoint shit
-    public int[] readBulk(int len, int endpoint) throws TBDException {
-        ByteBuffer buff = ByteBuffer.allocateDirect(len);
-        int retLen = transferBulk(buff, endpoint);
-        int[] ret = new int[retLen];
-        for(int i=0; i<retLen; i++)
-            ret[i] = buff.get(i);
-        return ret;
+    public boolean setAutoDetachKernelDriver(boolean set){
+        int retCode = LibUsb.setAutoDetachKernelDriver(handle, set);
+        return retCode==TBD.ERROR_CODE.SUCCESS;
     }
-
-    public void writeBulk(int[] data, int endpoint) throws TBDException {
-        ByteBuffer buff = ByteBuffer.allocateDirect(data.length);
-        int retLen = transferBulk(buff, endpoint);
-    }
-
-    public int transferBulk(ByteBuffer data, int endpoint) throws TBDException {
-        IntBuffer transferred = IntBuffer.allocate(1);
-        int retCode = LibUsb.bulkTransfer(handle, (byte) endpoint, data, transferred, 2000);
-        if(retCode==TBD.ERROR_CODE.SUCCESS){
-            return transferred.get();
-        }
-        else
-            throw new TBDException(retCode);
-    }
-
-    public int getMaxPacketSize(int endpoint){
-        return LibUsb.getMaxPacketSize(dev, (byte) endpoint);
-    }
-
-    public int getMaxIsoPacketSize(int endpoint){
-        return LibUsb.getMaxIsoPacketSize(dev, (byte) endpoint);
-    }
-
-    public void clearHalt(int endpoint){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.clearHalt(handle, (byte) endpoint);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
-
-    //interface shit
-    public void claimInterface(int iface){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.claimInterface(handle, iface);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
-    public void releaseInterface(int iface){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.releaseInterface(handle, iface);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
-    public void setInterfaceAltSetting(int iface, int altSetting){
-        if(handle==null)
-            return;
-        int retCode = LibUsb.setInterfaceAltSetting(handle, iface, altSetting);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
-    }
-
-    public boolean kernelDriverActive(int iface){
-        int retCode = LibUsb.kernelDriverActive(handle, iface);
-        if(retCode==0)
-            return false;
-        else if(retCode==1)
-            return true;
-        else
-            throw new TBDRuntimeException(retCode);
-    }
-
-
 
     @Override
     public String toString(){

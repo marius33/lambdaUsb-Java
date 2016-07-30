@@ -8,7 +8,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -62,7 +61,7 @@ public class Main {
             System.out.println();
 
             System.out.println("Product string");
-            System.out.print(dev.product());
+            System.out.print(dev.getDeviceDescriptor().product());
             System.out.println();
 
             System.out.println("Interface 0");
@@ -71,12 +70,12 @@ public class Main {
             System.out.println();
 
             System.out.println("Alt setting 0");
-            UsbInterfaceDescriptor ifDesc0 = if0.getSetting(0);
+            UsbInterfaceAltSetting ifDesc0 = if0.getAltSetting(0);
             System.out.println(ifDesc0);
             System.out.println();
 
             System.out.println("Endpoint 0");
-            UsbEndpointDescriptor ep00 = ifDesc0.getEndpoint(0);
+            UsbEndpoint ep00 = ifDesc0.getEndpoint(0);
             System.out.println(ep00);
             System.out.println();
 
@@ -87,22 +86,22 @@ public class Main {
             System.out.println();
 
             System.out.println("Alt setting 0");
-            UsbInterfaceDescriptor ifDesc1 = if1.getSetting(0);
+            UsbInterfaceAltSetting ifDesc1 = if1.getSetting(0);
             System.out.println(ifDesc1);
             System.out.println();
 
             System.out.println("Endpoint 0");
-            UsbEndpointDescriptor ep10 = ifDesc1.getEndpoint(0);
+            UsbEndpoint ep10 = ifDesc1.getEndpoint(0);
             System.out.println(ep10);
             System.out.println();
 
             System.out.println("Endpoint 1");
-            UsbEndpointDescriptor ep11 = ifDesc1.getEndpoint(1);
+            UsbEndpoint ep11 = ifDesc1.getEndpoint(1);
             System.out.println(ep11);
             System.out.println();
 
-            dev.claimInterface(1);
-            System.out.println(dev.transferBulk(new int[]{33}, 2));
+            if1.claim();
+            System.out.println(if1.new int[]{33}, 2));
             dev.releaseInterface(1);
 
 

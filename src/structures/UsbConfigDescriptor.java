@@ -8,14 +8,14 @@ import java.nio.ByteBuffer;
 /**
  * Created by Marius on 23/07/2016.
  */
-public class UsbConfigDescriptor {
+public final class UsbConfigDescriptor {
 
     UsbDevice parent;
-    protected ConfigDescriptor desc;
-    protected UsbInterface[] interfaces;
+    ConfigDescriptor desc;
+    UsbInterface[] interfaces;
 
 
-    protected UsbConfigDescriptor(UsbDevice parent, int index) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent, int index) throws TBDException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
@@ -25,11 +25,11 @@ public class UsbConfigDescriptor {
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
-            interfaces[i] = new UsbInterface(desc.iface()[i], parent.handle);
+            interfaces[i] = new UsbInterface(desc.iface()[i], this);
 
     }
 
-    protected UsbConfigDescriptor(UsbDevice parent, byte value) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent, byte value) throws TBDException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
@@ -39,11 +39,11 @@ public class UsbConfigDescriptor {
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
-            interfaces[i] = new UsbInterface(desc.iface()[i], parent.handle);
+            interfaces[i] = new UsbInterface(desc.iface()[i], this);
 
     }
 
-    protected UsbConfigDescriptor(UsbDevice parent) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent) throws TBDException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
@@ -53,7 +53,7 @@ public class UsbConfigDescriptor {
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
-            interfaces[i] = new UsbInterface(desc.iface()[i], parent.handle);
+            interfaces[i] = new UsbInterface(desc.iface()[i], this);
 
     }
 
@@ -116,6 +116,12 @@ public class UsbConfigDescriptor {
 
     public byte[] extra(){
         return desc.extra().array();
+    }
+
+    public void setActive(){
+        int retCode = LibUsb.setConfiguration(parent.handle, desc.bConfigurationValue());
+        if(retCode!=TBD.ERROR_CODE.SUCCESS)
+            throw new TBDRuntimeException(retCode);
     }
 
     @Override
