@@ -40,9 +40,9 @@ public abstract class HotplugListener {
 
     boolean matches(UsbDevice dev) {
 
-        int toCheckVid = dev.getDeviceDescriptor().idVendor();
-        int toCheckPid = dev.getDeviceDescriptor().idProduct();
-        LambdaUsb.DeviceClass toCheckClass = dev.getDeviceDescriptor().getDeviceClass();
+        int toCheckVid = dev.vid();
+        int toCheckPid = dev.pid();
+        LambdaUsb.DeviceClass toCheckClass = dev.getDeviceClass();
 
         if (vid != toCheckVid && vid != LibUsb.HOTPLUG_MATCH_ANY && toCheckVid != LibUsb.HOTPLUG_MATCH_ANY)
             return false;

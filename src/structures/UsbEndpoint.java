@@ -95,7 +95,7 @@ public class UsbEndpoint {
             buff.put(data);
             IntBuffer transferred = IntBuffer.allocate(1);
             int retCode = LibUsb.bulkTransfer(parent.parent.parent.parent.handle, bEndpointAddress(), buff, transferred, 2000);
-            if (retCode == LambdaUsb.ERROR_CODE.SUCCESS) {
+            if (retCode == LambdaUsb.Error.Success.valueOf()) {
                 int transf = transferred.get();
                 for (int i = 0; i < transf; i++)
                     data[i] = buff.get(i);
@@ -126,7 +126,7 @@ public class UsbEndpoint {
 
     public void clearHalt() {
         int retCode = LibUsb.clearHalt(parent.parent.parent.parent.handle, bEndpointAddress());
-        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode != LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbRuntimeException(retCode);
     }
 

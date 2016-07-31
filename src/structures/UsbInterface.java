@@ -41,7 +41,7 @@ public final class UsbInterface {
 
     public void claim() throws LambdaUsbException {
         int retCode = LibUsb.claimInterface(parent.parent.handle, getNumber());
-        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode != LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbException(retCode);
         else
             isClaimed = true;
@@ -49,7 +49,7 @@ public final class UsbInterface {
 
     public void release() throws LambdaUsbException {
         int retCode = LibUsb.releaseInterface(parent.parent.handle, getNumber());
-        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode != LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbException(retCode);
         else
             isClaimed = false;
@@ -69,11 +69,11 @@ public final class UsbInterface {
         }
         if (index > 0) {
             int retCode = LibUsb.setInterfaceAltSetting(parent.parent.handle, getNumber(), value);
-            if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+            if (retCode != LambdaUsb.Error.Success.valueOf())
                 throw new LambdaUsbException(retCode);
             currentSetting = index;
         } else
-            throw new LambdaUsbException(LambdaUsb.ERROR_CODE.NOT_FOUND);
+            throw new LambdaUsbException(LambdaUsb.Error.NotFound);
     }
 
     public int numAltSettings() {
@@ -86,7 +86,7 @@ public final class UsbInterface {
 
     public boolean isKernelDriverActive() throws LambdaUsbException {
         int retCode = LibUsb.kernelDriverActive(parent.parent.handle, getNumber());
-        if (retCode < LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode < LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbException(retCode);
         else
             return retCode == 1;
@@ -94,13 +94,13 @@ public final class UsbInterface {
 
     public void detachKernelDriver() throws LambdaUsbException {
         int retCode = LibUsb.detachKernelDriver(parent.parent.handle, getNumber());
-        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode != LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbException(retCode);
     }
 
     public void attachKernelDriver() throws LambdaUsbException {
         int retCode = LibUsb.attachKernelDriver(parent.parent.handle, getNumber());
-        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+        if (retCode != LambdaUsb.Error.Success.valueOf())
             throw new LambdaUsbException(retCode);
     }
 

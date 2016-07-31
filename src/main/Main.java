@@ -34,12 +34,6 @@ public class Main {
     public Main() {
 
         /*createUIComponents()*/
-
-        for (UsbDevice dev : LambdaUsb.getUsbDevices().filter(ATMEL_VID, -1)) {
-            UsbTreeNode devNode = new UsbTreeNode(dev, String.format("PID: %04x", dev.pid()));
-            treeRoot.add(devNode);
-        }
-        treeModel.reload();
     }
 
     public static void main(String[] args) {

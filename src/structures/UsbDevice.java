@@ -148,6 +148,34 @@ public final class UsbDevice {
         return desc;
     }
 
+    public LambdaUsb.DeviceClass getDeviceClass() {
+        return desc.getDeviceClass();
+    }
+
+    public int vid() {
+        return desc.idVendor();
+    }
+
+    public int pid() {
+        return desc.idProduct();
+    }
+
+    public float getDevReleaseNumber() {
+        return desc.getDevReleaseNumber();
+    }
+
+    public String manufacturer() {
+        return desc.manufacturer();
+    }
+
+    public String product() {
+        return desc.product();
+    }
+
+    public String serialNumber() {
+        return desc.serialNumber();
+    }
+
     public UsbBosDescriptor getBosDescriptor(){
         if(handle==null)
             return null;
