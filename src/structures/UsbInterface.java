@@ -23,22 +23,34 @@ public final class UsbInterface {
             altSettings[i] = new UsbInterfaceAltSetting(iface.altsetting()[i], this);
     }
 
+    public int getCurrentSettingValue(){
+        return altSettings[currentSetting].bAlternateSetting();
+    }
+
+    public int numberOfEndpoints(){
+        return altSettings[currentSetting].bAlternateSetting();
+    }
+
+    public UsbEndpoint getEndpoint(int index){
+        return altSettings[currentSetting].getEndpoint(index);
+    }
+
     public int getNumber() {
         return altSettings[currentSetting].bInterfaceNumber();
     }
 
-    public void claim() throws TBDException {
+    public void claim() throws LambdaUsbException {
         int retCode = LibUsb.claimInterface(parent.parent.handle, getNumber());
-        if (retCode != TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+            throw new LambdaUsbException(retCode);
         else
             isClaimed = true;
     }
 
-    public void release() throws TBDException {
+    public void release() throws LambdaUsbException {
         int retCode = LibUsb.releaseInterface(parent.parent.handle, getNumber());
-        if (retCode != TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+            throw new LambdaUsbException(retCode);
         else
             isClaimed = false;
     }
@@ -47,7 +59,7 @@ public final class UsbInterface {
         return isClaimed;
     }
 
-    public void setAltSetting(int value) throws TBDException {
+    public void setAltSetting(int value) throws LambdaUsbException {
         int index = -1;
         for (int i = 0; i < altSettings.length; i++) {
             if (altSettings[i].bAlternateSetting() == value) {
@@ -57,11 +69,11 @@ public final class UsbInterface {
         }
         if (index > 0) {
             int retCode = LibUsb.setInterfaceAltSetting(parent.parent.handle, getNumber(), value);
-            if (retCode != TBD.ERROR_CODE.SUCCESS)
-                throw new TBDException(retCode);
+            if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+                throw new LambdaUsbException(retCode);
             currentSetting = index;
         } else
-            throw new TBDException(TBD.ERROR_CODE.NOT_FOUND);
+            throw new LambdaUsbException(LambdaUsb.ERROR_CODE.NOT_FOUND);
     }
 
     public int numAltSettings() {
@@ -72,24 +84,24 @@ public final class UsbInterface {
         return altSettings[index];
     }
 
-    public boolean isKernelDriverActive() throws TBDException {
+    public boolean isKernelDriverActive() throws LambdaUsbException {
         int retCode = LibUsb.kernelDriverActive(parent.parent.handle, getNumber());
-        if (retCode < TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if (retCode < LambdaUsb.ERROR_CODE.SUCCESS)
+            throw new LambdaUsbException(retCode);
         else
             return retCode == 1;
     }
 
-    public void detachKernelDriver() throws TBDException {
+    public void detachKernelDriver() throws LambdaUsbException {
         int retCode = LibUsb.detachKernelDriver(parent.parent.handle, getNumber());
-        if (retCode != TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+            throw new LambdaUsbException(retCode);
     }
 
-    public void attachKernelDriver() throws TBDException {
+    public void attachKernelDriver() throws LambdaUsbException {
         int retCode = LibUsb.attachKernelDriver(parent.parent.handle, getNumber());
-        if (retCode != TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if (retCode != LambdaUsb.ERROR_CODE.SUCCESS)
+            throw new LambdaUsbException(retCode);
     }
 
     @Override

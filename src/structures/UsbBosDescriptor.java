@@ -31,10 +31,6 @@ public class UsbBosDescriptor {
         return bosDeviceCapabilities.length;
     }
 
-    protected BosDescriptor toLibUsb(){
-        return libusb_bosDesc;
-    }
-
     protected void free(){
         LibUsb.freeBosDescriptor(libusb_bosDesc);
     }

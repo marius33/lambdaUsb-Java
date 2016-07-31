@@ -21,11 +21,11 @@ public final class UsbDevice {
     public void open() throws Exception{
         handle = new DeviceHandle();
         int retCode = LibUsb.open(dev, handle);
-        if(retCode==TBD.ERROR_CODE.SUCCESS)
+        if(retCode == LambdaUsb.Error.Success.valueOf())
             refCount++;
         else{
             handle = null;
-            throw new TBDException(retCode);
+            throw new LambdaUsbException(retCode);
         }
     }
 
@@ -39,8 +39,8 @@ public final class UsbDevice {
         if(handle==null)
             return;
         int retCode = LibUsb.resetDevice(handle);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
     }
 
     public void ref(){
@@ -69,7 +69,6 @@ public final class UsbDevice {
     public boolean isActive(){
         return refCount>0;
     }
-
 
     public int getBusNumber(){
         return LibUsb.getBusNumber(dev);
@@ -104,15 +103,15 @@ public final class UsbDevice {
         return LibUsb.getDeviceAddress(dev);
     }
 
-    public TBD.DeviceSpeed getSpeed(){
-        return TBD.DeviceSpeed.getFromCode(LibUsb.getDeviceSpeed(dev));
+    public LambdaUsb.DeviceSpeed getSpeed(){
+        return LambdaUsb.DeviceSpeed.getFromCode(LibUsb.getDeviceSpeed(dev));
     }
 
-    public UsbConfigDescriptor getActiveConfigDescriptor() throws TBDException {
+    public UsbConfigDescriptor getActiveConfigDescriptor() throws LambdaUsbException {
         ConfigDescriptor confDesc = new ConfigDescriptor();
         int retCode = LibUsb.getActiveConfigDescriptor(dev, confDesc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbException(retCode);
         return new UsbConfigDescriptor(this);
     }
 
@@ -120,12 +119,12 @@ public final class UsbDevice {
         return desc.bNumConfigurations();
     }
 
-    public UsbConfigDescriptor getConfigDescriptor(int index) throws TBDException {
+    public UsbConfigDescriptor getConfigDescriptor(int index) throws LambdaUsbException {
 
         return new UsbConfigDescriptor(this, index);
     }
 
-    public UsbConfigDescriptor getConfigDescriptorByValue(byte bConfigurationValue) throws TBDException {
+    public UsbConfigDescriptor getConfigDescriptorByValue(byte bConfigurationValue) throws LambdaUsbException {
         return new UsbConfigDescriptor(this, bConfigurationValue);
     }
 
@@ -134,15 +133,15 @@ public final class UsbDevice {
         if(handle==null)
             return -1;
         int retCode = LibUsb.getConfiguration(handle, ib);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
         return ib.get();
     }
 
     public void setConfiguration(int conf){
         int retCode = LibUsb.setConfiguration(handle, conf);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
     }
 
     public UsbDeviceDescriptor getDeviceDescriptor(){
@@ -155,15 +154,15 @@ public final class UsbDevice {
         UsbBosDescriptor bosDesc;
         BosDescriptor aux = new BosDescriptor();
         int retCode = LibUsb.getBosDescriptor(handle, aux);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
         bosDesc = new UsbBosDescriptor(aux);
         return bosDesc;
     }
 
     public boolean setAutoDetachKernelDriver(boolean set){
         int retCode = LibUsb.setAutoDetachKernelDriver(handle, set);
-        return retCode==TBD.ERROR_CODE.SUCCESS;
+        return retCode== LambdaUsb.Error.Success.valueOf();
     }
 
     @Override

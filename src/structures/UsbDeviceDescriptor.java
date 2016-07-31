@@ -15,8 +15,8 @@ public class UsbDeviceDescriptor {
         parent = dev;
         desc = new DeviceDescriptor();
         int retCode = LibUsb.getDeviceDescriptor(dev.dev, desc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
     }
 
 
@@ -45,8 +45,8 @@ public class UsbDeviceDescriptor {
         return desc.bDeviceClass();
     }
 
-    public TBD.DeviceClass getDeviceClass(){
-        return TBD.DeviceClass.getFromCode(desc.bDeviceClass());
+    public LambdaUsb.DeviceClass getDeviceClass(){
+        return LambdaUsb.DeviceClass.getFromCode(desc.bDeviceClass());
     }
 
     public int bDeviceSubclass(){
@@ -88,7 +88,7 @@ public class UsbDeviceDescriptor {
 
     public String manufacturer(){
         if(parent.handle == null)
-            throw new TBDRuntimeException(TBD.ERROR_CODE.OTHER, "Can't retrieve manufacturer string. Device not opened.");
+            throw new LambdaUsbRuntimeException(LambdaUsb.Error.Other, "Can't retrieve manufacturer string. Device not opened.");
         return LibUsb.getStringDescriptor(parent.handle, desc.iManufacturer());
     }
 
@@ -98,7 +98,7 @@ public class UsbDeviceDescriptor {
 
     public String product(){
         if(parent.handle == null)
-            throw new TBDRuntimeException(TBD.ERROR_CODE.OTHER, "Can't retrieve product string. Device not opened.");
+            throw new LambdaUsbRuntimeException(LambdaUsb.Error.Other, "Can't retrieve product string. Device not opened.");
         return LibUsb.getStringDescriptor(parent.handle, desc.iProduct());
     }
 
@@ -108,7 +108,7 @@ public class UsbDeviceDescriptor {
 
     public String serialNumber(){
         if(parent.handle == null)
-            throw new TBDRuntimeException(TBD.ERROR_CODE.OTHER, "Can't retrieve serial number. Device not opened.");
+            throw new LambdaUsbRuntimeException(LambdaUsb.Error.Other, "Can't retrieve serial number. Device not opened.");
         return LibUsb.getStringDescriptor(parent.handle, desc.iSerialNumber());
     }
 

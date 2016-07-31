@@ -3,8 +3,6 @@ package structures;
 import org.usb4java.ConfigDescriptor;
 import org.usb4java.LibUsb;
 
-import java.nio.ByteBuffer;
-
 /**
  * Created by Marius on 23/07/2016.
  */
@@ -15,13 +13,13 @@ public final class UsbConfigDescriptor {
     UsbInterface[] interfaces;
 
 
-    UsbConfigDescriptor(UsbDevice parent, int index) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent, int index) throws LambdaUsbException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptor(parent.dev, (byte) index, desc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbException(retCode);
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
@@ -29,13 +27,13 @@ public final class UsbConfigDescriptor {
 
     }
 
-    UsbConfigDescriptor(UsbDevice parent, byte value) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent, byte value) throws LambdaUsbException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
         int retCode = LibUsb.getConfigDescriptorByValue(parent.dev, value, desc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbException(retCode);
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
@@ -43,13 +41,13 @@ public final class UsbConfigDescriptor {
 
     }
 
-    UsbConfigDescriptor(UsbDevice parent) throws TBDException {
+    UsbConfigDescriptor(UsbDevice parent) throws LambdaUsbException {
 
         this.parent = parent;
         desc = new ConfigDescriptor();
         int retCode = LibUsb.getActiveConfigDescriptor(parent.dev, desc);
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbException(retCode);
 
         interfaces = new UsbInterface[desc.bNumInterfaces()];
         for (int i = 0; i < desc.bNumInterfaces(); i++)
@@ -87,7 +85,7 @@ public final class UsbConfigDescriptor {
 
     public String description() {
         if (parent.handle == null)
-            throw new TBDRuntimeException(TBD.ERROR_CODE.OTHER, "Device must be opened before retrieving a string.");
+            throw new LambdaUsbRuntimeException(LambdaUsb.Error.Other, "Device must be opened before retrieving a string.");
         return LibUsb.getStringDescriptor(parent.handle, desc.iConfiguration());
     }
 
@@ -108,7 +106,7 @@ public final class UsbConfigDescriptor {
     }
 
     public int getMaxPower() {
-        if (parent.getSpeed().valueOf() <= TBD.DeviceSpeed.CODE.HIGH)
+        if (parent.getSpeed().valueOf() <= LambdaUsb.DeviceSpeed.CODE.HIGH)
             return desc.bMaxPower() * 2;
         else
             return desc.bMaxPower() * 8;
@@ -120,8 +118,8 @@ public final class UsbConfigDescriptor {
 
     public void setActive(){
         int retCode = LibUsb.setConfiguration(parent.handle, desc.bConfigurationValue());
-        if(retCode!=TBD.ERROR_CODE.SUCCESS)
-            throw new TBDRuntimeException(retCode);
+        if(retCode!= LambdaUsb.Error.Success.valueOf())
+            throw new LambdaUsbRuntimeException(retCode);
     }
 
     @Override

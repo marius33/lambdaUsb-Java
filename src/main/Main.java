@@ -35,7 +35,7 @@ public class Main {
 
         /*createUIComponents()*/
 
-        for (UsbDevice dev : TBD.getUsbDevices().filter(ATMEL_VID, -1)) {
+        for (UsbDevice dev : LambdaUsb.getUsbDevices().filter(ATMEL_VID, -1)) {
             UsbTreeNode devNode = new UsbTreeNode(dev, String.format("PID: %04x", dev.pid()));
             treeRoot.add(devNode);
         }
@@ -50,7 +50,7 @@ public class Main {
 //        frame.pack();
 //        frame.setVisible(true);
 
-        UsbDevice dev = TBD.getUsbDevices().filter(ATMEL_VID, -1).get(0);
+        UsbDevice dev = LambdaUsb.getUsbDevices().filter(ATMEL_VID, -1).get(0);
         System.out.println(dev);
         try {
             dev.open();
@@ -78,7 +78,6 @@ public class Main {
             UsbEndpoint ep00 = ifDesc0.getEndpoint(0);
             System.out.println(ep00);
             System.out.println();
-
 
             System.out.println("Interface 1");
             UsbInterface if1 = activConfig.getInterface(1);

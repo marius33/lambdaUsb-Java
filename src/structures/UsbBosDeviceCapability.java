@@ -20,10 +20,6 @@ public class UsbBosDeviceCapability {
             data[i] = capability.devCapabilityData().get(i);
     }
 
-    public BosDevCapabilityDescriptor toLibUsb(){
-        return libusb_bosDevCapDesc;
-    }
-
     public int type(){
         return type;
     }

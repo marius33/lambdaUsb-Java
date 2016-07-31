@@ -46,8 +46,8 @@ public class UsbInterfaceAltSetting {
         return desc.bInterfaceClass();
     }
 
-    public TBD.DeviceClass getDeviceClass(){
-        return TBD.DeviceClass.getFromCode(bInterfaceClass());
+    public LambdaUsb.DeviceClass getDeviceClass(){
+        return LambdaUsb.DeviceClass.getFromCode(bInterfaceClass());
     }
 
     public byte bInterfaceSubClass() {
