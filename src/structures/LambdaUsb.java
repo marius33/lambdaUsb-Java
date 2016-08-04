@@ -131,6 +131,46 @@ public final class LambdaUsb {
             public static final int OTHER = -99;
         }
     }
+    
+    public enum BosType {
+
+	WirelessUsbDeviceCapability(CODE.WIRELESS_USB_DEVICE_CAPABILITY, "Wireless Usb Device Capability"),
+	Usb20Extention(CODE.USB_2_0_EXTENTION, "Usb 2.0 Extension"),
+	SuperSpeedUsbDeviceCapability(CODE.SS_USB_DEVICE_CAPABILITY, "SuperSpeed Usb Device Capability"),
+	ContainerID(CODE.CONTAINER_ID, "Container ID");
+
+        private int code;
+        private String description;
+
+        BosType(int code, String desc) {
+            this.code = code;
+            description = desc;
+        }
+
+        public int valueOf() {
+            return code;
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
+
+        public static BosType getFromCode(int type) {
+            for (BosType o : BosType.values())
+                if (o.valueOf() == type)
+                    return o;
+            return null;
+        }
+
+        public static class CODE {
+            public static final int WIRELESS_USB_DEVICE_CAPABILITY = 1
+            public static final int USB_2_0_EXTENSION = 2;
+            public static final int SS_USB_DEVICE_CAPABILITY = 3;
+            public static final int CONTAINER_ID = 4;
+        }
+    }
+
 
     public enum TransferType {
 
