@@ -89,7 +89,7 @@ public class UsbEndpoint {
         return transfer(o.toByteArray());
     }
 
-    public byte[] transfer(byte[] data) throws LambdaUsbException {
+    public byte[] transferSync(byte[] data) throws LambdaUsbException {
         if (getTransferType().equals(LambdaUsb.TransferType.Bulk)) {
             ByteBuffer buff = ByteBuffer.allocateDirect(data.length);
             buff.put(data);
