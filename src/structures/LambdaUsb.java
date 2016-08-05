@@ -72,6 +72,7 @@ public final class LambdaUsb {
         listeners.remove(listener);
     }
 
+	
     public enum Error {
 
         Success(CODE.SUCCESS, "No error"),
@@ -170,7 +171,6 @@ public final class LambdaUsb {
             public static final int CONTAINER_ID = 4;
         }
     }
-
 
     public enum TransferType {
 
@@ -331,74 +331,89 @@ public final class LambdaUsb {
         }
 
     }
+	
+	public enum IsoSyncType{
+		
+		None(CODE.NONE, "None"),
+		Async(CODE.ASYNC, "Asynchronous"),
+		Adaptive(CODE.ADAPTIVE, "Adaptive"),
+		Synchronous(CODE.SYNC, "Synchronous");
+		
+		
+		private int code;
+        private String description;
 
-    public static class TRANSFER_TYPE {
-        public static final int CONTROL = 0;
-        public static final int ISOCHRONOUS = 1;
-        public static final int BULK = 2;
-        public static final int INTERRUPT = 3;
-        public static final int BULK_STREAM = 4;
-
-        static String getString(int code) {
-            switch (code) {
-                case CONTROL:
-                    return "Control";
-                case ISOCHRONOUS:
-                    return "Isochronous";
-                case BULK:
-                    return "Bulk";
-                case INTERRUPT:
-                    return "Interrupt";
-                case BULK_STREAM:
-                    return "Bulk Stream";
-                default:
-                    return "Unknown";
-            }
+        IsoSyncType(int code, String desc) {
+            this.code = code;
+            description = desc;
         }
-    }
 
-    public static class ISO_SYNC_TYPE {
-
-        public static final int NONE = 0;
-        public static final int ASYNC = 1;
-        public static final int ADAPTIVE = 2;
-        public static final int SYNC = 3;
-
-        static String getString(int code) {
-            switch (code) {
-                case NONE:
-                    return "None";
-                case ASYNC:
-                    return "Async";
-                case ADAPTIVE:
-                    return "Adaptive";
-                case SYNC:
-                    return "Sync";
-                default:
-                    return "Unknown";
-            }
+        public int valueOf() {
+            return code;
         }
-    }
 
-    public static class ISO_USAGE_TYPE {
-
-        public static final int DATA = 0;
-        public static final int FEEDBACK = 1;
-        public static final int IMPLICIT = 2;
-
-        static String getString(int code) {
-            switch (code) {
-                case DATA:
-                    return "Data";
-                case FEEDBACK:
-                    return "Feedback";
-                case IMPLICIT:
-                    return "Implicit";
-                default:
-                    return "Unknown";
-            }
+        @Override
+        public String toString() {
+            return description;
         }
-    }
+
+        public static IsoSyncType getFromCode(int code) {
+            for (IsoSyncType o : IsoSyncType.values()) {
+                if (o.valueOf() == code)
+                    return o;
+            }
+            return null;
+        }
+		
+		public static class CODE{
+			public static final int NONE = 0;
+			public static final int ASYNC = 1;
+			public static final int ADAPTIVE = 2;
+			public static final int SYNC = 3;
+		}
+			
+	}
+
+	public enum IsoUsageType{
+		
+		Data(CODE.DATA, "Data"),
+		Feedback(CODE.FEEDBACK, "Feedback"),
+		Implicit(CODE.IMLICIT, "Implicit");
+		
+		private int code;
+		private String description;
+		
+		IsoUsageType(int code, String desc){
+			this.code = code;
+			description = desc;
+		}
+		
+		public int valueOf(){
+			return code;
+		}
+		
+		@Override
+		public String toString(){
+			return description;
+		}
+		
+		public static IsoUsageType getFromCode(int code){
+			for(IsoUsageType o : IsoUsageType.values())
+				if(o.valueOf() == code)
+					return o;
+				
+			return null;
+		}
+		
+		public static class CODE{
+			public static final int DATA = 0;
+			public static final int FEEDBACK = 1;
+			public static final int IMPLICIT = 2;
+		}
+		
+		
+	}
 
 
 }
+
