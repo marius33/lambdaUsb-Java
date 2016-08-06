@@ -20,6 +20,7 @@ public class UsbInterfaceAltSetting {
         endpoints = new UsbEndpoint[ifaceDesc.bNumEndpoints()];
         for(int i=0; i<ifaceDesc.bNumEndpoints(); i++)
             endpoints[i] = new UsbEndpoint(ifaceDesc.endpoint()[i], this);
+        this.parent = parent;
     }
 
     public int bLength(){

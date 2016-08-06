@@ -20,8 +20,8 @@ public class UsbBosDeviceCapability {
             data[i] = capability.devCapabilityData().get(i);
     }
 
-    public int type(){
-        return type;
+    public LambdaUsb.BosType type(){
+        return LambdaUsb.BosType.getFromCode(libusb_bosDevCapDesc.bDevCapabilityType());
     }
 
     public int[] data() {

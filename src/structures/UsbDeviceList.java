@@ -79,4 +79,15 @@ public class UsbDeviceList implements Iterable<UsbDevice> {
         return it;
     }
 
+    @Override
+    public String toString(){
+
+        StringBuilder sb = new StringBuilder();
+        for(UsbDevice dev : this)
+            sb.append(dev);
+
+        return sb.toString();
+
+    }
+
 }

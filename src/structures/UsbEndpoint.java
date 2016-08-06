@@ -86,7 +86,7 @@ public class UsbEndpoint {
     }
 
     public byte[] transfer(LambdaBytes o) throws LambdaUsbException {
-        return transfer(o.toByteArray());
+        return transferSync(o.toByteArray());
     }
 
     public byte[] transferSync(byte[] data) throws LambdaUsbException {
@@ -139,8 +139,8 @@ public class UsbEndpoint {
         sb.append("Attributes", String.format("%02x", desc.bmAttributes()));
         sb.append("\tType", getTransferType().toString());
         if (getTransferType().equals(LambdaUsb.TransferType.Isochronous)) {
-            sb.append("\tIso Sync Type", LambdaUsb.ISO_SYNC_TYPE.getString(getIsoSyncType()));
-            sb.append("\tIso Usage Type", LambdaUsb.ISO_USAGE_TYPE.getString(getIsoUsageType()));
+            sb.append("\tIso Sync Type", getIsoSyncType());
+            sb.append("\tIso Usage Type", getIsoUsageType());
         } else
             sb.append("\tReserved", String.format("%02x", desc.bmAttributes() >> 2));
 

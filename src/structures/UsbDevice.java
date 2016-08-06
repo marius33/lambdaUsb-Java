@@ -16,6 +16,7 @@ public final class UsbDevice {
 
     UsbDevice(org.usb4java.Device dev){
         this.dev = dev;
+        desc = new UsbDeviceDescriptor(this);
     }
 
     public void open() throws Exception{
