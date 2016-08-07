@@ -2,8 +2,12 @@ package structures;
 
 public class Transfer implements LambdaBytes{
 
-  public Transfer(){
+  public Transfer(LambdaUsb.TransferFlag[] flags, LambdaUsb.TransferType type, long timeout, ){
+
     super();
+
+
+
   }
 
 
