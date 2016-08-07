@@ -227,9 +227,9 @@ public final class LambdaUsb {
             return description;
         }
 
-        public static EndpointDirection getFromCode(int type) {
+        public static EndpointDirection getFromCode(int address) {
             for (EndpointDirection o : EndpointDirection.values())
-                if (o.valueOf() == type)
+                if (o.valueOf() == (address&CODE.MASK))
                     return o;
             return null;
         }
@@ -238,6 +238,7 @@ public final class LambdaUsb {
 
             public static final int IN = 0x80;
             public static final int OUT = 0x00;
+            public static final int MASK = 0x80;
 
         }
     }
@@ -328,6 +329,8 @@ public final class LambdaUsb {
         }
 
         public static IsoSyncType getFromCode(int code) {
+            code >>= CODE.OFFSET;
+            code &= CODE.MASK;
             for (IsoSyncType o : IsoSyncType.values()) {
                 if (o.valueOf() == code)
                     return o;
@@ -340,6 +343,8 @@ public final class LambdaUsb {
             public static final int ASYNC = 1;
             public static final int ADAPTIVE = 2;
             public static final int SYNC = 3;
+            public static final int OFFSET = 2;
+            public static final int MASK = 0x03;
         }
 
     }
@@ -368,6 +373,8 @@ public final class LambdaUsb {
         }
 
         public static IsoUsageType getFromCode(int code){
+            code >>= CODE._OFFSET;
+            code &= CODE._MASK;
             for(IsoUsageType o : IsoUsageType.values())
                 if(o.valueOf() == code)
                     return o;
@@ -379,6 +386,8 @@ public final class LambdaUsb {
             public static final int DATA = 0;
             public static final int FEEDBACK = 1;
             public static final int IMPLICIT = 2;
+            public static final int _MASK = 0x03;
+            public static final int _OFFSET = 4;
         }
 
 
