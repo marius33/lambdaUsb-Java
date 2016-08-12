@@ -20,14 +20,6 @@ public class UsbEndpoint {
         this.parent = parent;
     }
 
-    public byte bLength() {
-        return desc.bLength();
-    }
-
-    public byte bDescriptorType() {
-        return desc.bDescriptorType();
-    }
-
     public byte address() {
         return desc.bEndpointAddress();
     }
@@ -59,26 +51,14 @@ public class UsbEndpoint {
 
     public LambdaUsb.IsoSyncType isoSyncType() {
 
-        return LambdaUsb.IsoSyncType.getFromCode(desc.bmAttributes());
+        return LambdaUsb.IsoSyncType.getFromCode(bmAttributes());
 
     }
 
     public LambdaUsb.IsoUsageType isoUsageType() {
 
-        return LambdaUsb.IsoUsageType.getFromCode(desc.bmAttributes());
+        return LambdaUsb.IsoUsageType.getFromCode(bmAttributes());
 
-    }
-
-    public int getIsoSyncType() {
-        int type = desc.bmAttributes() & LibUsb.ISO_SYNC_TYPE_MASK;
-        type >>= 2;
-        return type;
-    }
-
-    public int getIsoUsageType() {
-        int type = desc.bmAttributes() & LibUsb.ISO_USAGE_TYPE_MASK;
-        type >>= 4;
-        return type;
     }
 
     public short wMaxPacketSize() {
@@ -96,14 +76,10 @@ public class UsbEndpoint {
     public byte bSynchAddress() {
         return desc.bSynchAddress();
     }
-
-    public ByteBuffer extra() {
-        return desc.extra();
-    }
-
-    public int extraLength() {
-        return desc.extraLength();
-    }
+	
+	public byte[] extra(){
+		return desc.extra().array();
+	}
 
     public byte[] transfer(LambdaBytes o) throws LambdaUsbException {
         return transferSync(o.toByteArray(), 0);
@@ -158,12 +134,12 @@ public class UsbEndpoint {
 
         return null;
     }
-
-    public int getMaxPacketSize() {
+	
+    public int maxPacketSize() {
         return LibUsb.getMaxPacketSize(parent.parent.parent.parent.dev, address());
     }
 
-    public int getMaxIsoPacketSize() {
+    public int maxIsoPacketSize() {
         return LibUsb.getMaxIsoPacketSize(parent.parent.parent.parent.dev, address());
     }
 
@@ -176,18 +152,18 @@ public class UsbEndpoint {
     @Override
     public String toString() {
         StringStructureBuilder sb = new StringStructureBuilder();
-        sb.append("Address", String.format("%02x", desc.bEndpointAddress()));
+        sb.append("Address", String.format("%02x", address()));
         sb.append("\tNumber", number());
-        sb.append("\tType", isEpIn() ? "EP-IN" : "EP-OUT");
-        sb.append("Attributes", String.format("%02x", desc.bmAttributes()));
-        sb.append("\tType", transferType().toString());
+        sb.append("\tDirection", direction());
+        sb.append("Attributes", String.format("%02x", bmAttributes()));
+        sb.append("\tType", transferType());
         if (transferType().equals(LambdaUsb.TransferType.Isochronous)) {
             sb.append("\tIso Sync Type", getIsoSyncType());
             sb.append("\tIso Usage Type", getIsoUsageType());
         } else
             sb.append("\tReserved", String.format("%02x", desc.bmAttributes() >> 2));
 
-        sb.append("Max packet size", desc.wMaxPacketSize());
+        sb.append("Max packet size", maxPacketSize());
         sb.append("Polling interval", desc.bInterval());
         sb.append("Refresh rate (for audio)", desc.bRefresh());
         sb.append("Sync address (for audio)", desc.bSynchAddress());
@@ -195,3 +171,4 @@ public class UsbEndpoint {
     }
 
 }
+
